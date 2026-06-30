@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     let sqlText = `
       SELECT
         floor,
-        FORMAT(bdate, 'MMM yyyy') AS month,
+        LEFT(DATENAME(month, bdate), 3) + ' ' + CAST(YEAR(bdate) AS VARCHAR(4)) AS month,
         SUM(useunit) AS totalUnits,
         SUM(amt)     AS totalAmt,
         SUM(gamt)    AS totalGamt,
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
       bindings.push({ name: "toDate", type: sql.Date, value: new Date(toDate) })
     }
 
-    sqlText += " GROUP BY floor, FORMAT(bdate, 'MMM yyyy'), YEAR(bdate), MONTH(bdate)"
+    sqlText += " GROUP BY floor, LEFT(DATENAME(month, bdate), 3) + ' ' + CAST(YEAR(bdate) AS VARCHAR(4)), YEAR(bdate), MONTH(bdate)"
     sqlText += " ORDER BY YEAR(bdate) DESC, MONTH(bdate) DESC, floor"
 
     const rows = await query<MonthlySummaryRow>(sqlText, (r) => {
