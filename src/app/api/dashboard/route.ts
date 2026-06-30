@@ -39,12 +39,12 @@ export async function GET() {
     // 5. Monthly chart — last 12 months (collected vs billed)
     const chartRows = await query<{ month: string; collected: number; billed: number }>(
       `SELECT
-         FORMAT(bdate, 'MMM yyyy') AS month,
+         LEFT(DATENAME(month, bdate), 3) + ' ' + CAST(YEAR(bdate) AS VARCHAR(4)) AS month,
          ISNULL(SUM(dbt),  0)     AS collected,
          ISNULL(SUM(gamt), 0)     AS billed
        FROM [dbo].[Ledger]
        WHERE bdate >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1))
-       GROUP BY FORMAT(bdate, 'MMM yyyy'), YEAR(bdate), MONTH(bdate)
+       GROUP BY LEFT(DATENAME(month, bdate), 3) + ' ' + CAST(YEAR(bdate) AS VARCHAR(4)), YEAR(bdate), MONTH(bdate)
        ORDER BY YEAR(bdate) ASC, MONTH(bdate) ASC`
     )
 
