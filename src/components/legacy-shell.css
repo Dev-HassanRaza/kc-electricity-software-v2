@@ -1,226 +1,74 @@
 /* ============================================================
-   Kareem Centre — Legacy Windows Desktop Shell Styles
-   Pixel-accurate recreation of the classic Windows desktop app
+   Kareem Centre — Modernized Desktop Shell Styles
+   A high-end, premium web dashboard aesthetic
    ============================================================ */
 
-/* === Reset & Base === */
-.kc-shell * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Font override */
+.font-sans {
+  font-family: 'Outfit', sans-serif !important;
 }
 
-.kc-shell {
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  font-size: 11px;
-  user-select: none;
+/* Custom background gradient - modern premium interpretation of the blue Bliss theme */
+.bg-radial-gradient {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 60%),
+    #f1f5f9;
 }
 
-/* === Menu Bar === */
-.kc-menubar {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  background: #ffffff;
-  border-bottom: 1px solid #cbd5e1;
-  flex-shrink: 0;
-  padding: 0 4px;
-  position: relative;
-  z-index: 100;
+/* Premium micro-scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.kc-menubar__brand {
-  font-size: 11px;
-  font-weight: bold;
-  color: #0f172a;
-  padding: 0 6px 0 8px;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  text-transform: uppercase;
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 999px;
 }
 
-.kc-menubar__divider {
-  width: 1px;
-  height: 14px;
-  background: #e2e8f0;
-  margin: 0 6px 0 2px;
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: 999px;
+  border: 1px solid transparent;
 }
 
-.kc-menu {
-  position: relative;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.35);
 }
 
-.kc-menu__trigger {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 8px;
-  color: #000;
-  font-size: 11px;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  background: transparent;
-  border: none;
-  cursor: default;
-  white-space: nowrap;
-  outline: none;
+/* Animation utilities for entrance effects */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.kc-menu__trigger:hover,
-.kc-menu__trigger--active {
-  background: #316ac5;
-  color: #ffffff;
+.animate-in {
+  animation-duration: 150ms;
+  animation-fill-mode: both;
 }
 
-/* Underline the accelerator key */
-.kc-menu__trigger .kc-underline {
-  text-decoration: underline;
+.slide-in-from-top-1\.5 {
+  animation-name: slideInFromTop;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* === Dropdown === */
-.kc-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  min-width: 220px;
-  background: #ffffff;
-  border: 1px solid #808080;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  padding: 2px 0;
+.fade-in {
+  animation-name: fadeIn;
 }
 
-.kc-dropdown__item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 20px;
-  padding: 0 20px 0 8px;
-  color: #000;
-  font-size: 11px;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  background: transparent;
-  border: none;
-  cursor: default;
-  white-space: nowrap;
-  text-align: left;
-  outline: none;
-}
-
-.kc-dropdown__item:hover {
-  background: #316ac5;
-  color: #ffffff;
-}
-
-.kc-dropdown__item:hover .kc-shortcut {
-  color: #ffffff;
-}
-
-.kc-dropdown__item--blue {
-  color: #0000cc;
-}
-
-.kc-dropdown__item--blue:hover {
-  color: #ffffff;
-}
-
-.kc-dropdown__item--separator {
-  height: 1px;
-  background: #d0d0d0;
-  margin: 2px 4px;
-  border: none;
-  cursor: default;
-}
-
-.kc-shortcut {
-  color: #808080;
-  font-size: 11px;
-  margin-left: 24px;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-}
-
-.kc-item-prefix {
-  color: #800000;
-  margin-right: 2px;
-  font-size: 11px;
-}
-
-/* === Logout Button (replaces "End" menu item) === */
-.kc-logout-btn {
-  display: flex;
-  align-items: center;
-  height: 28px;
-  padding: 0 8px;
-  color: #000;
-  font-size: 11px;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  background: transparent;
-  border: none;
-  cursor: default;
-  white-space: nowrap;
-  outline: none;
-  margin-left: auto;
-}
-
-.kc-logout-btn:hover {
-  background: #316ac5;
-  color: #ffffff;
-}
-
-/* === Content Area (Windows XP Blue Wallpaper) === */
-.kc-content {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-  /* Replicating the classic Windows XP Bliss-inspired blue gradient */
-  background:
-    radial-gradient(ellipse 80% 60% at 30% 40%, #87ceeb 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 70% 30%, #b0e0f8 0%, transparent 55%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, #1e7fd4 0%, #0a5ba8 60%, #063d7a 100%);
-}
-
-/* Light beam / diagonal highlight */
-.kc-content::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.28) 0%,
-    rgba(255,255,255,0.12) 30%,
-    transparent 55%
-  );
-  pointer-events: none;
-}
-
-/* === Status Bar === */
-.kc-statusbar {
-  display: flex;
-  align-items: center;
-  height: 18px;
-  background: #d4d0c8;
-  border-top: 1px solid #ffffff;
-  box-shadow: inset 0 1px 0 #808080;
-  padding: 0 6px;
-  flex-shrink: 0;
-}
-
-.kc-statusbar__text {
-  color: #000;
-  font-size: 11px;
-  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-  font-weight: bold;
-}
-
-/* === Click-away overlay === */
-.kc-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

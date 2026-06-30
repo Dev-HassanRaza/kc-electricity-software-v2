@@ -3,6 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { signOut } from 'next-auth/react'
 import './legacy-shell.css'
+import FloorModal from './floor-modal'
+import ClientModal from './client-modal'
+import UnitChargesModal from './unit-charges-modal'
+import MeterModal from './meter-modal'
+import PrevReadingModal from './prev-reading-modal'
+import IssueBillsModal from './issue-bills-modal'
+import RecoveryAmountModal from './recovery-amount-modal'
+import AverageBillModal from './average-bill-modal'
+import ReportsModal from './reports-modal'
+
 
 // ============================================================
 // Menu structure — mirrors the legacy Kareem Centre desktop app
@@ -78,7 +88,7 @@ function LabelWithAccelerator({ label, accelerator }: { label: string; accelerat
   return (
     <span>
       {label.slice(0, idx)}
-      <span className="kc-underline">{label[idx]}</span>
+      <span className="underline decoration-indigo-400 decoration-2 underline-offset-2">{label[idx]}</span>
       {label.slice(idx + 1)}
     </span>
   )
@@ -93,6 +103,18 @@ export default function LegacyShell({
   onMenuSelect?: (key: string) => void
 }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const [activeModal, setActiveModal] = useState<
+    | 'add-floor'
+    | 'client-info'
+    | 'add-link-charges'
+    | 'add-meter'
+    | 'prev-reading'
+    | 'issue-bills'
+    | 'recovery-amount'
+    | 'issue-avg-bill'
+    | null
+  >(null)
+  const [activeReportKey, setActiveReportKey] = useState<string | null>(null)
   const menuBarRef = useRef<HTMLDivElement>(null)
 
   const close = useCallback(() => setOpenMenu(null), [])
@@ -112,76 +134,127 @@ export default function LegacyShell({
 
   const handleSelect = (key: string) => {
     close()
-    onMenuSelect?.(key)
+    if (key === 'add-floor') {
+      setActiveModal('add-floor')
+    } else if (key === 'client-info') {
+      setActiveModal('client-info')
+    } else if (key === 'add-link-charges') {
+      setActiveModal('add-link-charges')
+    } else if (key === 'add-meter') {
+      setActiveModal('add-meter')
+    } else if (key === 'prev-reading') {
+      setActiveModal('prev-reading')
+    } else if (key === 'issue-bills') {
+      setActiveModal('issue-bills')
+    } else if (key === 'recovery-amount') {
+      setActiveModal('recovery-amount')
+    } else if (key === 'issue-avg-bill') {
+      setActiveModal('issue-avg-bill')
+    } else if ([
+      'floor-list',
+      'format-bill',
+      'bill',
+      'format-avg-bill',
+      'avg-bill',
+      'format-12-bill',
+      '12-bill',
+      'ledger',
+      'daily-ledger',
+      'balance-sheet',
+      'defaulter-list',
+      'monthly-summary',
+      'motor-units'
+    ].includes(key)) {
+      setActiveReportKey(key)
+    } else {
+      onMenuSelect?.(key)
+    }
   }
+
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' })
   }
 
   return (
-    <div className="kc-shell">
-      {/* ── Menu Bar ── */}
-      <nav className="kc-menubar" ref={menuBarRef} aria-label="Main menu">
-        <div className="kc-menubar__brand">Kareem Centre</div>
-        <div className="kc-menubar__divider" />
-        {MENUS.map((menu) => (
-          <div className="kc-menu" key={menu.id}>
-            {/* Trigger */}
-            <button
-              id={`menu-trigger-${menu.id}`}
-              className={`kc-menu__trigger${openMenu === menu.id ? ' kc-menu__trigger--active' : ''}`}
-              onClick={() => toggle(menu.id)}
-              aria-haspopup="true"
-              aria-expanded={openMenu === menu.id}
-              aria-controls={`menu-dropdown-${menu.id}`}
-            >
-              <LabelWithAccelerator label={menu.label} accelerator={menu.accelerator} />
-            </button>
+    <div className="flex flex-col w-screen h-screen overflow-hidden bg-slate-50 font-sans select-none text-slate-900">
+      {/* ── Modern Premium Navbar ── */}
+      <nav className="flex items-center justify-between h-14 bg-white/80 border-b border-slate-200 backdrop-blur-md px-6 flex-shrink-0 relative z-50" ref={menuBarRef} aria-label="Main menu">
+        <div className="flex items-center">
+          <div className="text-sm font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 font-sans uppercase flex items-center gap-2">
+            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse" />
+            Kareem Centre
+          </div>
+          <div className="w-px h-5 bg-slate-200 mx-4" />
+          <div className="flex items-center gap-1">
+            {MENUS.map((menu) => (
+              <div className="relative" key={menu.id}>
+                {/* Trigger */}
+                <button
+                  id={`menu-trigger-${menu.id}`}
+                  className={`px-3.5 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-slate-950 transition-all text-xs font-semibold flex items-center gap-1.5 focus:outline-none cursor-pointer ${
+                    openMenu === menu.id ? 'bg-slate-100 text-slate-950' : ''
+                  }`}
+                  onClick={() => toggle(menu.id)}
+                  aria-haspopup="true"
+                  aria-expanded={openMenu === menu.id}
+                  aria-controls={`menu-dropdown-${menu.id}`}
+                >
+                  <LabelWithAccelerator label={menu.label} accelerator={menu.accelerator} />
+                </button>
 
-            {/* Dropdown */}
-            {openMenu === menu.id && (
-              <div
-                id={`menu-dropdown-${menu.id}`}
-                className="kc-dropdown"
-                role="menu"
-                aria-labelledby={`menu-trigger-${menu.id}`}
-              >
-                {menu.items.map((item, idx) =>
-                  item.kind === 'separator' ? (
-                    <div key={idx} className="kc-dropdown__item--separator" role="separator" />
-                  ) : (
-                    <button
-                      key={item.key}
-                      id={`menu-item-${item.key}`}
-                      className={`kc-dropdown__item${item.blue ? ' kc-dropdown__item--blue' : ''}`}
-                      role="menuitem"
-                      onClick={() => handleSelect(item.key)}
-                    >
-                      <span>
-                        {item.prefix && (
-                          <span className="kc-item-prefix">{item.prefix} </span>
-                        )}
-                        {item.label}
-                      </span>
-                      {item.shortcut && (
-                        <span className="kc-shortcut">{item.shortcut}</span>
-                      )}
-                    </button>
-                  )
+                {/* Dropdown */}
+                {openMenu === menu.id && (
+                  <div
+                    id={`menu-dropdown-${menu.id}`}
+                    className="absolute top-full left-0 mt-1.5 w-64 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl shadow-xl shadow-slate-200/20 z-[1000] p-1.5 flex flex-col gap-0.5 animate-in fade-in slide-in-from-top-1.5 duration-150"
+                    role="menu"
+                    aria-labelledby={`menu-trigger-${menu.id}`}
+                  >
+                    {menu.items.map((item, idx) =>
+                      item.kind === 'separator' ? (
+                        <div key={idx} className="h-px bg-slate-100 my-1" role="separator" />
+                      ) : (
+                        <button
+                          key={item.key}
+                          id={`menu-item-${item.key}`}
+                          className={`w-full px-3 py-2 rounded-lg text-left text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition-all text-xs font-medium flex items-center justify-between focus:outline-none cursor-pointer ${
+                            item.blue ? 'text-sky-600 font-semibold' : ''
+                          }`}
+                          role="menuitem"
+                          onClick={() => handleSelect(item.key)}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            {item.prefix && (
+                              <span className="text-[10px] text-slate-400 font-semibold">{item.prefix}</span>
+                            )}
+                            {item.label}
+                          </span>
+                          {item.shortcut && (
+                            <span className="text-[10px] text-slate-500 font-medium tracking-wide bg-slate-50 px-1.5 py-0.5 rounded-md border border-slate-200">
+                              {item.shortcut}
+                            </span>
+                          )}
+                        </button>
+                      )
+                    )}
+                  </div>
                 )}
               </div>
-            )}
+            ))}
           </div>
-        ))}
+        </div>
 
         {/* ── Logout ── */}
         <button
           id="menu-logout"
-          className="kc-logout-btn"
+          className="px-4.5 py-1.5 border border-slate-200 hover:bg-red-50 hover:border-red-200 text-slate-700 hover:text-red-600 rounded-xl transition-all text-xs font-bold focus:outline-none flex items-center gap-1.5 active:scale-95 cursor-pointer"
           onClick={handleLogout}
           aria-label="Logout"
         >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
           Logout
         </button>
       </nav>
@@ -189,21 +262,57 @@ export default function LegacyShell({
       {/* Click-away overlay */}
       {openMenu && (
         <div
-          className="kc-overlay"
+          className="fixed inset-0 z-40 bg-transparent"
           onClick={close}
           aria-hidden="true"
         />
       )}
 
-      {/* ── Content Area (XP-style wallpaper) ── */}
-      <main className="kc-content" aria-label="Desktop workspace" />
+      {/* ── Content Area (Classic Windows XP Wallpaper inspired by Bliss) ── */}
+      <main className="flex-1 overflow-hidden relative bg-radial-gradient" aria-label="Desktop workspace">
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-100/20 via-sky-50/10 to-transparent pointer-events-none" />
+      </main>
 
       {/* ── Status Bar ── */}
-      <footer className="kc-statusbar">
-        <span className="kc-statusbar__text">
+      <footer className="flex items-center justify-between h-7 bg-white border-t border-slate-200 px-6 flex-shrink-0 text-slate-500 text-[10px]">
+        <span className="font-semibold text-slate-500">
           POWERED BY: PANJA GROUP &nbsp;(0333-3212904)
         </span>
+        <span className="font-medium tracking-wide text-slate-600">
+          SYSTEM ACTIVE
+        </span>
       </footer>
+
+      {/* ── Premium Modals ── */}
+      {activeModal === 'add-floor' && (
+        <FloorModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'client-info' && (
+        <ClientModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'add-link-charges' && (
+        <UnitChargesModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'add-meter' && (
+        <MeterModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'prev-reading' && (
+        <PrevReadingModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'issue-bills' && (
+        <IssueBillsModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'recovery-amount' && (
+        <RecoveryAmountModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === 'issue-avg-bill' && (
+        <AverageBillModal onClose={() => setActiveModal(null)} />
+      )}
+      {activeReportKey && (
+        <ReportsModal reportKey={activeReportKey} onClose={() => setActiveReportKey(null)} />
+      )}
     </div>
   )
 }
+
+

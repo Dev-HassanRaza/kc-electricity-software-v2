@@ -86,3 +86,28 @@ export async function PUT(
     return NextResponse.json({ error: "Failed to update meter" }, { status: 500 })
   }
 }
+
+// DELETE /api/meters/[serial]
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ serial: string }> }
+) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { serial } = await params
+  const serialNum = parseInt(serial, 10)
+  if (isNaN(serialNum)) return NextResponse.json({ error: "Invalid serial" }, { status: 400 })
+
+  try {
+    await execute(
+      "DELETE FROM [dbo].[Add_Meter] WHERE serial = @serial",
+      (r) => r.input("serial", sql.Int, serialNum)
+    )
+    return NextResponse.json({ message: "Meter deleted successfully" })
+  } catch (err) {
+    console.error("[/api/meters/[serial] DELETE]", err)
+    return NextResponse.json({ error: "Failed to delete meter" }, { status: 500 })
+  }
+}
+

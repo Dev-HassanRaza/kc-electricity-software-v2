@@ -71,3 +71,35 @@ export async function PUT(
     return NextResponse.json({ error: "Failed to update unit rate" }, { status: 500 })
   }
 }
+
+// DELETE /api/unit-rates/[id]
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  const { id } = await params
+  const idNum = parseInt(id, 10)
+  if (isNaN(idNum)) return NextResponse.json({ error: "Invalid rate ID" }, { status: 400 })
+
+  try {
+    const existing = await queryOne<UnitRate>(
+      "SELECT serial FROM [dbo].[Add_unit] WHERE serial = @serial",
+      (r) => r.input("serial", sql.Int, idNum)
+    )
+    if (!existing) return NextResponse.json({ error: "Unit rate not found" }, { status: 404 })
+
+    await execute(
+      "DELETE FROM [dbo].[Add_unit] WHERE serial = @serial",
+      (r) => r.input("serial", sql.Int, idNum)
+    )
+
+    return NextResponse.json({ message: "Unit rate deleted successfully" })
+  } catch (err) {
+    console.error("[/api/unit-rates/[id] DELETE]", err)
+    return NextResponse.json({ error: "Failed to delete unit rate" }, { status: 500 })
+  }
+}
+
