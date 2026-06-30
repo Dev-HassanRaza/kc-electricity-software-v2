@@ -232,25 +232,53 @@ export default function ReportsModal({ reportKey, onClose }: ReportParamsModalPr
         {/* Style injection for printing */}
         <style jsx global>{`
           @media print {
-            body * {
-              visibility: hidden;
+            /* Reset root layouts to block flow so pagination works perfectly without blank pages */
+            html, body, #__next, .h-screen, .flex-col, .flex-1, .overflow-hidden, .overflow-y-auto {
+              height: auto !important;
+              min-height: 0 !important;
+              overflow: visible !important;
+              position: static !important;
+              display: block !important;
             }
-            .print-preview-container, .print-preview-container * {
-              visibility: visible;
+
+            /* Hide the Desktop Shell completely */
+            header, nav, main, footer {
+              display: none !important;
             }
-            .print-preview-container {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
+
+            /* Make the Modal full-page and static for natural flow */
+            .fixed.inset-0 {
+              position: static !important;
+              padding: 0 !important;
+              margin: 0 !important;
               background: white !important;
-              color: black !important;
+              display: block !important;
             }
+            .max-h-[95vh] {
+              max-height: none !important;
+            }
+
+            /* Hide modal toolbars */
             .no-print {
               display: none !important;
             }
+
+            .print-preview-container {
+              width: 100% !important;
+              max-width: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+              display: block !important;
+            }
+
+            /* Prevent empty trailing page after the last invoice */
             .page-break {
               page-break-after: always;
+            }
+            .page-break:last-child {
+              page-break-after: auto;
             }
           }
         `}</style>
