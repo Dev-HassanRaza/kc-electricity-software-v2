@@ -1,0 +1,74 @@
+/* ============================================================
+   Kareem Centre — Modernized Desktop Shell Styles
+   A high-end, premium web dashboard aesthetic
+   ============================================================ */
+
+/* Font override */
+.font-sans {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+/* Custom background gradient - modern premium interpretation of the blue Bliss theme */
+.bg-radial-gradient {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.1) 0%, transparent 60%),
+    #f1f5f9;
+}
+
+/* Premium micro-scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.35);
+}
+
+/* Animation utilities for entrance effects */
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation-duration: 150ms;
+  animation-fill-mode: both;
+}
+
+.slide-in-from-top-1\.5 {
+  animation-name: slideInFromTop;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
