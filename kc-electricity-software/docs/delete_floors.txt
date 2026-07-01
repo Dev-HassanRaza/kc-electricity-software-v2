@@ -1,0 +1,34 @@
+BEGIN TRANSACTION;
+
+-- 1. Remove from Prev
+DELETE FROM [Electircity].[dbo].[Prev]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+-- 2. Remove from Add_party
+DELETE FROM [Electircity].[dbo].[Add_party]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+-- 3. Remove from Ledger
+DELETE FROM [Electircity].[dbo].[Ledger]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+-- 4. Remove from Add_Meter
+DELETE FROM [Electircity].[dbo].[Add_Meter]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+-- 5. Remove from Add_Floor
+DELETE FROM [Electircity].[dbo].[Add_Floor]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+-- 6. Remove from Add_unit
+DELETE FROM [Electircity].[dbo].[Add_unit]
+WHERE [floor] IN ('MOBILINK', 'ZONG');
+
+
+-- ⚠️ CHECK YOUR RESULTS:
+-- Look at the "Messages" tab in SSMS. If the row counts look correct, highlight and run:
+COMMIT TRANSACTION;
+
+-- 🛑 OOPS BUTTON:
+-- If something looks wrong or threw an error, highlight and run this instead:
+-- ROLLBACK TRANSACTION;
